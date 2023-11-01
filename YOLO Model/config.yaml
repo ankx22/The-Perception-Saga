@@ -1,0 +1,6 @@
+path: /home/ankit/Downloads/WindowYoloV8/code/data
+train: images/train
+val: images/val
+
+nc: 1
+names: ['window']
