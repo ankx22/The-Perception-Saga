@@ -20,10 +20,12 @@ print(f"Battery Status: {battery_status}")
 # pear_drone.land()
 
 pear_drone.streamon()
-pear_drone.takeoff()
+# pear_drone.takeoff()
+i = 0
 while True:
     frame = pear_drone.get_frame_read().frame
     frame = cv2.resize(frame, (360, 240))
+    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
     cv2.imshow('video', frame)
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
@@ -38,6 +40,7 @@ while True:
         pear_drone.move_right(30)
     elif key == ord('p'):
         print(f"Taking picture....\n")
-        cv2.imwrite('picture.png', frame)
-print(f"Landing ....")
-pear_drone.land()
+    cv2.imwrite('picture{i}.png', frame)
+    i += 1
+# print(f"Landing....")
+# pear_drone.land()
