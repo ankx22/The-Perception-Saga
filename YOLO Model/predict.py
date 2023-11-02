@@ -3,9 +3,9 @@ from ultralytics import YOLO
 import cv2
 
 
-model_path = '/home/ankit/Downloads/WindowYoloV8/runs/segment/train2/weights/last.pt'
+model_path = '/home/ankit/Downloads/The-Perception-Saga/YOLO Model/runs/segment/train/weights/last.pt'
 
-image_path = '/home/ankit/Downloads/1698439921939.png'
+image_path = '/home/ankit/Downloads/washburn pics/1698439940027.png'
 
 img = cv2.imread(image_path)
 H, W, _ = img.shape
@@ -20,4 +20,4 @@ for result in results:
 
         mask = cv2.resize(mask, (W, H))
 
-        cv2.imwrite('./output2.png', mask)
+        cv2.imwrite('./outputwashburn.png', mask)

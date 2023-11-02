@@ -3,8 +3,8 @@ import os
 import cv2
 
 
-input_dir = '/home/ankit/Downloads/WindowYoloV8/tmp/masks'
-output_dir = '/home/ankit/Downloads/WindowYoloV8/tmp/labels'
+input_dir = '/home/ankit/Downloads/The-Perception-Saga/YOLO Model/tmp/masks'
+output_dir = '/home/ankit/Downloads/The-Perception-Saga/YOLO Model/tmp/labels'
 
 for j in os.listdir(input_dir):
     image_path = os.path.join(input_dir, j)
