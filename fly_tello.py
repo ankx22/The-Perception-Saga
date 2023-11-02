@@ -28,7 +28,7 @@ while True:
     # frame = cv2.resize(frame, (360, 240), interpolation=cv2.INTER_LINEAR) # Ubuntu
     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
     cv2.imshow('video', frame)
-    key = cv2.waitKey(0) & 0xFF
+    key = cv2.waitKey(2) & 0xFF
     if key == ord('q'):
         break
     elif key == ord('w'):
