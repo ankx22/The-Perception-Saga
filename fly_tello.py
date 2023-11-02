@@ -24,11 +24,11 @@ pear_drone.streamon()
 i = 0
 while True:
     frame = pear_drone.get_frame_read().frame
-    # frame = cv2.resize(frame, (360, 240)) # Windows
+    frame = cv2.resize(frame, (360, 240)) # Windows
     # frame = cv2.resize(frame, (360, 240), interpolation=cv2.INTER_LINEAR) # Ubuntu
     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
     cv2.imshow('video', frame)
-    key = cv2.waitKey(2) & 0xFF
+    key = cv2.waitKey(0) & 0xFF
     if key == ord('q'):
         break
     elif key == ord('w'):
@@ -41,7 +41,7 @@ while True:
         pear_drone.move_right(30)
     elif key == ord('p'):
         print(f"Taking picture....\n")
-        filename = f"frame{i}"
+        filename = f"frame{i}.png"
         cv2.imwrite(filename, frame)
     i += 1
 # print(f"Landing....")
