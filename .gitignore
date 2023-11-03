@@ -126,3 +126,5 @@ dmypy.json
 # tmp and data folder
 YOLO Model/tmp/
 YOLO Model/data/
+data_augment/aug_real_world_imgs/
+data_augment/aug_real_world_masks/
