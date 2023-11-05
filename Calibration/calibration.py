@@ -2,13 +2,15 @@ import numpy as np
 import cv2 as cv
 import glob
 import pickle
+import csv
 
 
 
 ################ FIND CHESSBOARD CORNERS - OBJECT POINTS AND IMAGE POINTS #############################
 
 chessboardSize = (10,7)
-frameSize = (360,240)
+# frameSize = (640,480)
+frameSize = (960,720)
 
 
 
@@ -66,46 +68,56 @@ pickle.dump((cameraMatrix, dist), open( "calibration.pkl", "wb" ))
 pickle.dump(cameraMatrix, open( "cameraMatrix.pkl", "wb" ))
 pickle.dump(dist, open( "dist.pkl", "wb" ))
 
-# Assuming cameraMatrix and dist are numpy arrays.
-np.savetxt("cameraMatrix.csv", cameraMatrix, delimiter=",")
-np.savetxt("distCoefficients.csv", dist, delimiter=",")
+# Assuming cameraMatrix and dist are the outputs from cv2.calibrateCamera
+camera_matrix_data = cameraMatrix.tolist()  # Convert numpy array to a list of lists
+distortion_data = dist.tolist()  # Convert numpy array to a list
+
+# Save camera matrix
+with open("cameraMatrix.csv", "w", newline='') as f:
+    writer = csv.writer(f)
+    writer.writerows(camera_matrix_data)
+
+# Save distortion coefficients
+with open("distCoeffs.csv", "w", newline='') as f:
+    writer = csv.writer(f)
+    writer.writerows(distortion_data)
 
 ############## UNDISTORTION #####################################################
 
-img = cv.imread('cali5.png')
-h,  w = img.shape[:2]
-newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w,h), 1, (w,h))
+# img = cv.imread('cali5.png')
+# h,  w = img.shape[:2]
+# newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w,h), 1, (w,h))
 
 
 
-# Undistort
-dst = cv.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
+# # Undistort
+# dst = cv.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
 
-# crop the image
-x, y, w, h = roi
-dst = dst[y:y+h, x:x+w]
-cv.imwrite('caliResult1.png', dst)
-
-
-
-# Undistort with Remapping
-mapx, mapy = cv.initUndistortRectifyMap(cameraMatrix, dist, None, newCameraMatrix, (w,h), 5)
-dst = cv.remap(img, mapx, mapy, cv.INTER_LINEAR)
-
-# crop the image
-x, y, w, h = roi
-dst = dst[y:y+h, x:x+w]
-cv.imwrite('caliResult2.png', dst)
+# # crop the image
+# x, y, w, h = roi
+# dst = dst[y:y+h, x:x+w]
+# cv.imwrite('caliResult1.png', dst)
 
 
 
+# # Undistort with Remapping
+# mapx, mapy = cv.initUndistortRectifyMap(cameraMatrix, dist, None, newCameraMatrix, (w,h), 5)
+# dst = cv.remap(img, mapx, mapy, cv.INTER_LINEAR)
 
-# Reprojection Error
-mean_error = 0
+# # crop the image
+# x, y, w, h = roi
+# dst = dst[y:y+h, x:x+w]
+# cv.imwrite('caliResult2.png', dst)
 
-for i in range(len(objpoints)):
-    imgpoints2, _ = cv.projectPoints(objpoints[i], rvecs[i], tvecs[i], cameraMatrix, dist)
-    error = cv.norm(imgpoints[i], imgpoints2, cv.NORM_L2)/len(imgpoints2)
-    mean_error += error
 
-print( "total error: {}".format(mean_error/len(objpoints)) )
+
+
+# # Reprojection Error
+# mean_error = 0
+
+# for i in range(len(objpoints)):
+#     imgpoints2, _ = cv.projectPoints(objpoints[i], rvecs[i], tvecs[i], cameraMatrix, dist)
+#     error = cv.norm(imgpoints[i], imgpoints2, cv.NORM_L2)/len(imgpoints2)
+#     mean_error += error
+
+# print( "total error: {}".format(mean_error/len(objpoints)) )

@@ -15,7 +15,7 @@ drone.streamon()
 i = 0
 while True:
     frame = drone.get_frame_read().frame
-    frame = cv2.resize(frame, (360, 240)) # Windows
+    # frame = cv2.resize(frame, (360, 240)) # Windows
     # frame = cv2.resize(frame, (360, 240), interpolation=cv2.INTER_LINEAR) # Ubuntu
     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
     H, W, _ = frame.shape
