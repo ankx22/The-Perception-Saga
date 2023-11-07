@@ -6,23 +6,24 @@ Both env_containing_window and closing2 can be used as inputs and groundtruths s
 """
 
 
-import cv2 
+import cv2
 import numpy as np
 from PIL import Image, ImageFilter
-import random 
-import math 
-import os 
+import random
+import math
+import os
 
 
-envi_list = ['andromeda.jpeg','donuts.jpg','tides.jpeg','lavender_nature.jpeg','halloween.jpg']
+envi_list = ['andromeda.jpeg', 'donuts.jpg',
+             'tides.jpeg', 'lavender_nature.jpeg', 'halloween.jpg']
 
 
 image_path = '/home/ssuryalolla/Aerial_Robotics/data_augment/real_world_imgs'
 envi_path = '/home/ssuryalolla/Aerial_Robotics/data_augment/environments'
 mask_path = '/home/ssuryalolla/Aerial_Robotics/data_augment/real_world_masks'
 
-augmented_image_dir = '/home/ssuryalolla/Aerial_Robotics/data_augment/aug_real_world_imgs'  
-augmented_mask_dir = '/home/ssuryalolla/Aerial_Robotics/data_augment/aug_real_world_masks'  
+augmented_image_dir = '/home/ssuryalolla/Aerial_Robotics/data_augment/aug_real_world_imgs'
+augmented_mask_dir = '/home/ssuryalolla/Aerial_Robotics/data_augment/aug_real_world_masks'
 
 if not os.path.exists(augmented_image_dir):
     os.makedirs(augmented_image_dir)
@@ -38,14 +39,13 @@ for k in range(len(image_files)):
     filename_mask = mask_files[k]
 
     for j in range(300):
-        
+
         full_image_path = os.path.join(image_path, filename)
 
-
         filename_env = envi_list[random.randint(0, len(envi_list) - 1)]
-        full_envi_path = os.path.join(envi_path,filename_env)
+        full_envi_path = os.path.join(envi_path, filename_env)
 
-        full_mask_path = os.path.join(mask_path,filename_mask)
+        full_mask_path = os.path.join(mask_path, filename_mask)
 
         img = cv2.imread(full_image_path)
         # let's downscale the image using new  width and height
@@ -55,18 +55,19 @@ for k in range(len(image_files)):
         down_width = 480
         down_height = 360
         down_points = (down_width, down_height)
-        img = cv2.resize(img, down_points, interpolation= cv2.INTER_LINEAR)
-        resized_down_env = cv2.resize(env, down_points, interpolation= cv2.INTER_LINEAR)
-        label_mask = cv2.resize(label_mask_actual, down_points, interpolation= cv2.INTER_LINEAR)
-        
+        img = cv2.resize(img, down_points, interpolation=cv2.INTER_LINEAR)
+        resized_down_env = cv2.resize(
+            env, down_points, interpolation=cv2.INTER_LINEAR)
+        label_mask = cv2.resize(
+            label_mask_actual, down_points, interpolation=cv2.INTER_LINEAR)
 
-        gray = 255 - cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+        gray = 255 - cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        _, thrash = cv2.threshold(gray, 70 , 255, cv2.CHAIN_APPROX_NONE)
-
+        _, thrash = cv2.threshold(gray, 70, 255, cv2.CHAIN_APPROX_NONE)
 
         # Find the contours in the thresholded image
-        contours, hierarchy = cv2.findContours(thrash, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv2.findContours(
+            thrash, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         # Sort the contours by area and get the largest contour
         sorted_contours = sorted(contours, key=cv2.contourArea, reverse=True)
@@ -78,7 +79,8 @@ for k in range(len(image_files)):
         mask = np.zeros_like(gray)
 
         # Draw the outermost square on the mask
-        cv2.drawContours(mask, [outermost_square], -1, (255), thickness=cv2.FILLED)
+        cv2.drawContours(mask, [outermost_square], -1,
+                         (255), thickness=cv2.FILLED)
 
         # To fill inside the inner square with white, use the second largest contour (assuming it's the inner square)
         inner_square = sorted_contours[1]
@@ -86,7 +88,6 @@ for k in range(len(image_files)):
 
         # Combine the mask with the original image
         im_out = cv2.bitwise_or(img, img, mask=mask)
-
 
         # cv2.imshow('foreground', im_out)
         # cv2.waitKey(0)
@@ -111,43 +112,47 @@ for k in range(len(image_files)):
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
 
-
-        contours, _ = cv2.findContours(mask1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(
+            mask1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         contour = contours[0]
 
         perimeter = cv2.arcLength(contour, True)
         approx = cv2.approxPolyDP(contour, 0.05 * perimeter, True)
 
-        # drawing points 
+        # drawing points
 
         pts1 = []
         pts2 = []
 
-        for i,point in enumerate(approx):
+        for i, point in enumerate(approx):
             x, y = point[0]
             # print(x,y)
             # cv2.circle(img, (x, y), 5, (0, 0, 255), -1)
             # Generating a random point inside the circle
             angle = 2 * math.pi * random.random()  # Random angle between 0 and 2π
-            if i == 0: distance = random.randint(20, 50) * math.sqrt(random.random())  # Random distance from center
-            if i == 1: distance = random.randint(20, 50) * math.sqrt(random.random())
-            if i == 2: distance = random.randint(20, 50) * math.sqrt(random.random())
-            if i == 3: distance = random.randint(20, 50) * math.sqrt(random.random())
+            if i == 0:
+                # Random distance from center
+                distance = random.randint(20, 50) * math.sqrt(random.random())
+            if i == 1:
+                distance = random.randint(20, 50) * math.sqrt(random.random())
+            if i == 2:
+                distance = random.randint(20, 50) * math.sqrt(random.random())
+            if i == 3:
+                distance = random.randint(20, 50) * math.sqrt(random.random())
             a = int(x + distance * math.cos(angle))
             b = int(y + distance * math.sin(angle))
 
-            pts1.append([x,y])
-            pts2.append([a,b])
+            pts1.append([x, y])
+            pts2.append([a, b])
 
         starts = np.float32(np.array(pts1))
         warped = np.float32(np.array(pts2))
-
 
         # Apply Perspective Transform Algorithm
         matrix = cv2.getPerspectiveTransform(starts, warped)
         result = cv2.warpPerspective(img, matrix, (480, 360))
 
-        warped_mask = cv2.warpPerspective(label_mask,matrix,(480,360))
+        warped_mask = cv2.warpPerspective(label_mask, matrix, (480, 360))
 
         # Convert to grayscale
         gray_mask = cv2.cvtColor(warped_mask, cv2.COLOR_BGR2GRAY)
@@ -156,18 +161,23 @@ for k in range(len(image_files)):
         _, warped_mask = cv2.threshold(gray_mask, 1, 255, cv2.THRESH_BINARY)
 
         # Find contours
-        contours_mask, _ = cv2.findContours(warped_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours_mask, _ = cv2.findContours(
+            warped_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # If there are more than 2 contours, it means there are other unwanted elements in the image.
         # In this case, sort the contours by area and keep the two largest ones (the concentric squares).
         if len(contours_mask) > 2:
-            contours_mask = sorted(contours_mask, key=cv2.contourArea, reverse=True)[:2]
+            contours_mask = sorted(
+                contours_mask, key=cv2.contourArea, reverse=True)[:2]
 
         # Draw the contours, filling the space between them with white
-        cv2.drawContours(warped_mask, contours_mask, -1, (255, 255, 255), thickness=-1)  # -1 thickness means fill
+        # -1 thickness means fill
+        cv2.drawContours(warped_mask, contours_mask, -1,
+                         (255, 255, 255), thickness=-1)
 
-        gray_result = 255 - cv2.cvtColor(result,cv2.COLOR_BGR2GRAY)
-        _, thrash_result = cv2.threshold(gray_result, 65 , 255, cv2.CHAIN_APPROX_NONE)
+        gray_result = 255 - cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
+        _, thrash_result = cv2.threshold(
+            gray_result, 65, 255, cv2.CHAIN_APPROX_NONE)
 
         kernel2 = np.ones((30, 30), np.uint8)
         closing2 = cv2.morphologyEx(thrash_result, cv2.MORPH_CLOSE, kernel2)
@@ -175,13 +185,14 @@ for k in range(len(image_files)):
 
         result_withoutbg = cv2.bitwise_and(result, result, mask=closing2)
 
-        env_through_window = cv2.bitwise_and(resized_down_env,resized_down_env,mask = closing2)
+        env_through_window = cv2.bitwise_and(
+            resized_down_env, resized_down_env, mask=closing2)
 
         env_without_window_mask = cv2.bitwise_not(env_through_window)
 
         # env_without_window = np.where(inv_closing2[:, :, None].astype(bool), resized_down_env, 0)
-        env_without_window = cv2.bitwise_and(resized_down_env,env_without_window_mask)
-
+        env_without_window = cv2.bitwise_and(
+            resized_down_env, env_without_window_mask)
 
         # cv2.imshow('window without bg', warped_mask)
         # cv2.waitKey(0)
@@ -189,13 +200,12 @@ for k in range(len(image_files)):
         # cv2.imshow('without window mask', inv_closing2) # Transformed Capture
         # cv2.imshow('env w/o window', env_without_window) # Transformed Capture
 
-        env_containing_window = cv2.add(result_withoutbg,env_without_window)
-
+        env_containing_window = cv2.add(result_withoutbg, env_without_window)
 
         # Generate unique filenames
         filename_augimage = f"augFrame{k:04d}{j:04d}.png"
         filename_augmask = f"augFrame{k:04d}{j:04d}.png"
-        
+
         aug_image_path = os.path.join(augmented_image_dir, filename_augimage)
         aug_mask_path = os.path.join(augmented_mask_dir, filename_augmask)
 
@@ -205,11 +215,10 @@ for k in range(len(image_files)):
 
         # cv2.imshow('env containing window', env_containing_window)
         # cv2.imshow('label mask', warped_mask)
-        
-        # cv2.waitKey(0)
-        
-        # cv2.destroyAllWindows()
 
+        # cv2.waitKey(0)
+
+        # cv2.destroyAllWindows()
 
 
 # kernel = np.ones((30, 30), np.uint8)

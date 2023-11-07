@@ -129,3 +129,4 @@ YOLO Model/data/
 data_augment/aug_real_world_imgs/
 data_augment/aug_real_world_masks/
 outputs
+Calibration/chessboard_corners

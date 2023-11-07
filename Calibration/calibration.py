@@ -3,15 +3,14 @@ import cv2 as cv
 import glob
 import pickle
 import csv
-
+import os
 
 
 ################ FIND CHESSBOARD CORNERS - OBJECT POINTS AND IMAGE POINTS #############################
 
-chessboardSize = (10,7)
+chessboardSize = (10, 7)
 # frameSize = (640,480)
-frameSize = (960,720)
-
+frameSize = (960, 720)
 
 
 # termination criteria
@@ -20,18 +19,29 @@ criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
 # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
 objp = np.zeros((chessboardSize[0] * chessboardSize[1], 3), np.float32)
-objp[:,:2] = np.mgrid[0:chessboardSize[0],0:chessboardSize[1]].T.reshape(-1,2)
+objp[:, :2] = np.mgrid[0:chessboardSize[0],
+                       0:chessboardSize[1]].T.reshape(-1, 2)
 
 size_of_chessboard_squares_mm = 20
 objp = objp * size_of_chessboard_squares_mm
 
 
 # Arrays to store object points and image points from all the images.
-objpoints = [] # 3d point in real world space
-imgpoints = [] # 2d points in image plane.
+objpoints = []  # 3d point in real world space
+imgpoints = []  # 2d points in image plane.
 
 
-images = glob.glob('/home/ankit/Downloads/Calibration/images/*.png')
+images = glob.glob(
+    '/home/ankit/Downloads/The-Perception-Saga/Calibration/images/*.png')
+
+# Directory where you want to save the images
+current_path = os.path.dirname(os.path.abspath(__file__))
+output_dir = os.path.join(current_path, "chessboard_corners")
+
+# Check if the directory exists
+if not os.path.exists(output_dir):
+    # If it does not exist, create it
+    os.makedirs(output_dir)
 
 for image in images:
 
@@ -45,7 +55,7 @@ for image in images:
     if ret == True:
 
         objpoints.append(objp)
-        corners2 = cv.cornerSubPix(gray, corners, (11,11), (-1,-1), criteria)
+        corners2 = cv.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
         imgpoints.append(corners)
 
         # Draw and display the corners
@@ -53,23 +63,31 @@ for image in images:
         cv.imshow('img', img)
         cv.waitKey(1000)
 
+        # Save the image to the specified directory
+        # Construct the full path with the image name
+        image_name = os.path.basename(image)
+        save_path = os.path.join(output_dir, image_name)
+
+        # Save the image
+        cv.imwrite(save_path, img)
+
 
 cv.destroyAllWindows()
 
 
-
-
 ############## CALIBRATION #######################################################
 
-ret, cameraMatrix, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, frameSize, None, None)
+ret, cameraMatrix, dist, rvecs, tvecs = cv.calibrateCamera(
+    objpoints, imgpoints, frameSize, None, None)
 
 # Save the camera calibration result for later use (we won't worry about rvecs / tvecs)
-pickle.dump((cameraMatrix, dist), open( "calibration.pkl", "wb" ))
-pickle.dump(cameraMatrix, open( "cameraMatrix.pkl", "wb" ))
-pickle.dump(dist, open( "dist.pkl", "wb" ))
+pickle.dump((cameraMatrix, dist), open("calibration.pkl", "wb"))
+pickle.dump(cameraMatrix, open("cameraMatrix.pkl", "wb"))
+pickle.dump(dist, open("dist.pkl", "wb"))
 
 # Assuming cameraMatrix and dist are the outputs from cv2.calibrateCamera
-camera_matrix_data = cameraMatrix.tolist()  # Convert numpy array to a list of lists
+# Convert numpy array to a list of lists
+camera_matrix_data = cameraMatrix.tolist()
 distortion_data = dist.tolist()  # Convert numpy array to a list
 
 # Save camera matrix
@@ -89,7 +107,6 @@ with open("distCoeffs.csv", "w", newline='') as f:
 # newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w,h), 1, (w,h))
 
 
-
 # # Undistort
 # dst = cv.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
 
@@ -97,7 +114,6 @@ with open("distCoeffs.csv", "w", newline='') as f:
 # x, y, w, h = roi
 # dst = dst[y:y+h, x:x+w]
 # cv.imwrite('caliResult1.png', dst)
-
 
 
 # # Undistort with Remapping
@@ -108,8 +124,6 @@ with open("distCoeffs.csv", "w", newline='') as f:
 # x, y, w, h = roi
 # dst = dst[y:y+h, x:x+w]
 # cv.imwrite('caliResult2.png', dst)
-
-
 
 
 # # Reprojection Error

@@ -164,14 +164,17 @@ def get_axis(img, corners):
     cv2.imwrite(axis_filename, image)
     return rotation_vector, translation_vector
 
+
 def recordWorker():
     j = 0
     while True:
         frame = drone.get_frame_read().frame
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        filename = current_path + str("/outputs/frames_thread/") + f"frame{j}.png"
+        filename = current_path + \
+            str("/outputs/frames_thread/") + f"frame{j}.png"
         cv2.imwrite(filename, frame)
         j = j+1
+
 
 # Read env file [ax ay az] [bx by bz] [cx cy cz]..
 # Initialize a list to store the window coordinates
@@ -289,7 +292,8 @@ try:
                 mask = results[0].masks.data
                 mask = mask.cpu().numpy()*255
                 mask = cv2.resize(mask[0], (W, H))
-                mask_filename = current_path + str("/outputs/masks/") + f"frame{i}.png"
+                mask_filename = current_path + \
+                    str("/outputs/masks/") + f"frame{i}.png"
                 cv2.imwrite(mask_filename, mask)
 
                 # To get corners
@@ -308,6 +312,7 @@ try:
     # drone.land()
 
 except KeyboardInterrupt:
+    drone.land()
     # HANDLE KEYBOARD INTERRUPT AND STOP THE DRONE COMMANDS
     print('keyboard interrupt')
     drone.emergency()

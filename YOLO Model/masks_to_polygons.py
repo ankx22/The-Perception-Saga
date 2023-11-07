@@ -13,7 +13,8 @@ for j in os.listdir(input_dir):
     _, mask = cv2.threshold(mask, 1, 255, cv2.THRESH_BINARY)
 
     H, W = mask.shape
-    contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(
+        mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     # convert the contours to polygons
     polygons = []
