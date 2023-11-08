@@ -22,7 +22,9 @@ This project aims to develop a comprehensive autonomy stack that enables a quadr
 
 
 ## Report
-For detailed description of the math see the report [here](Report.pdf).## Collaborators
+For detailed description of the math see the report [here](Report.pdf).
+
+## Collaborators
 Ankit Talele - amtalele@wpi.edu
 
 Chaitanya Sriram Gaddipati - cgaddipati@wpi.edu
